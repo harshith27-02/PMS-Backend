@@ -1,56 +1,36 @@
-const Slots = require("../models/slots")
+const Slots = require('../models/slots')
+const ErrResponse = require('../common/errorResponse')
+const asyncHandler = require('../middleware/asyncHandler')
 
-exports.getSlots = async (req, res) => {
-    try {
+exports.getSlots = asyncHandler(async (req, res, next) => {
+   
         const slots = await Slots.find();
         res.status(200).json({ success: true, data: slots })
 
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message })
+});
 
-    }
-
-}
-
-exports.createSlot = async (req, res) => {
-    try {
+exports.createSlot = asyncHandler(async (req, res, next) => {
         const slot = await Slots.create(req.body);
         res.status(201).json({
             success: true,
             data: slot
         });
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message })
-    }
-}
+});
 
-exports.getSingleSlot = async (req, res) => {
-    try {
+exports.getSingleSlot = asyncHandler(async (req, res, next) => {
+    
         const slot = await Slots.find({ _id: req.params.id })
-        if (!slot) {
-            return res.status(400).json({
-                success: false,
-                data: `Slot not found for id ${req.params.id}`
-
-            })
+        if (slot.length === 0) {
+            return next(new ErrResponse(`Slot Not Found For ID ${req.params.id}`,400 ))
         }
-        res.status(200).json({ success: true, data: slots })
+        res.status(200).json({ success: true, data: slot })
+})
 
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message })
-
-    }
-}
-
-exports.updateSlot = async (req, res) => {
-    try {
+exports.updateSlot = asyncHandler(async (req, res, next) => {
+   
         let updatedSlot = await Slots.find({ _id: req.params.id })
-        if (!updatedSlot) {
-            return res.status(400).json({
-                success: false,
-                data: `Slot not found for id ${req.params.id}`
-
-            })
+        if (updatedSlot.length === 0) {
+            return next(new ErrResponse(`Slot Not Found For ID ${req.params.id}`,400 ))
         }
         updatedSlot = await Slots.findByIdAndUpdate(req.params.id,
             req.body, {
@@ -60,63 +40,125 @@ exports.updateSlot = async (req, res) => {
 
         res.status(200).json({ success: true, data: updatedSlot })
 
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message })
+});
 
-    }
-}
-
-exports.deleteSlot = async (req, res) => {
-    try {
+exports.deleteSlot = asyncHandler(async (req, res, next) => {
         let slot = await Slots.find({ _id: req.params.id })
-        if (!slot) {
-            return res.status(400).json({
-                success: false,
-                data: `Slot not found for id ${req.params.id}`
-
-            })
+        if (slot.length === 0) {
+            return next(new ErrResponse(`Slot Not Found For ID ${req.params.id}`,400 ))
         }
         slot = await Slots.findByIdAndDelete(req.params.id);
 
         res.status(200).json({ success: true, data: slot })
 
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message })
+});
 
-    }
-}
-
-exports.getFloor = async (req, res) => {
-    try {
+exports.getFloor = asyncHandler(async (req, res, next) => {
+  
         const floors = await Slots.distinct('floorName', {
             isActive: req.params.active
         })
-        if (!floor) {
-            return res.status(400).json({
-                success: false,
-                data: `Floors not found`
-            })
+        if (floors.length === 0) {
+            return next(new ErrResponse(`Floor not Found`,400 ))
+
         }
         res.status(200).json({ success: true, data: floors })
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message })
-    }
-}
+});
 
-exports.getWingsByFloor = async (req, res) => {
-    try {
+exports.getWingsByFloor = asyncHandler(async (req, res, next) => {
         const wings = await Slots.distinct('wingName', {
             floorName: req.params.floor
         })
-        if (!wings) {
-            return res.status(400).json({
-                success: false,
-                data: `Wings not found for floor ${req.params.floor}`
-            })
-
+        if (wings.length === 0) {
+            return next(new ErrResponse(`Wing Not Found For ID ${req.params.floor}`,400 ))
         }
         res.status(200).json({ success: true, data: wings })
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message })
+
+});
+
+exports.getslotsBywing = asyncHandler(async (req, res, next) => {
+        const slot = await Slots.find({
+            floorName: req.params.floor,
+            wingName: req.params.wing
+        }).select({
+            'slots.slotName': 1,
+            'slots._id': 1,
+            'slots.capacity': 1,
+            'slots.vehicleType': 1,
+            'slots.isAvailable': 1,
+            wingName: 1,
+            _id: 1
+        })
+        if (slot.length === 0) {
+            return next(new ErrResponse(`Slots Not Found For ${req.params.floor} and  ${req.params.wing}`,400 ))
+        }
+        res.status(200).json({ success: true, data: slot })
+});
+
+exports.getslotsById = asyncHandler(async (req, res, next) => {
+        const slot = await Slots.find({
+            'slots._id': req.params.id
+        }, {
+            'slots.$': 1
+        }).select({
+            floorName: 1,
+            wingName: 1,
+            isFullyOccupied: 1,
+            isActive: 1
+        }) 
+        if (slot.length === 0) {
+            return next(new ErrResponse(`Slots Not Found For ID ${req.params.id}`,400 ))
+
     }
-}
+    res.status(200).json({ success: true, data: slot })
+});
+
+exports.updateSlotById = asyncHandler(async (req, res, next) => {
+   
+        let {slotName, capacity} = req.body;
+        const slot = await Slots.updateOne({
+            'slots._id': req.params.id
+        }, {
+            $set: {
+                "slots.$.capacity": capacity,
+                "slots.$.slotName": slotName
+            }
+        })
+        res.status(200).json({ success: true, data: slot })
+
+});
+
+exports.updateSlots = asyncHandler(async (req, res, next) => {
+
+        const floor = req.params.floor
+        let wing = req.params.wing
+        let findwing = await Slots.find({
+            floorName: floor,
+            wingName: wing
+        }).select({
+            _id: 1
+        })
+       if (!findwing) {
+            return next(new ErrResponse(`Id does not exist for ${floor} and ${wing}`,400 ))
+        }
+        findwing = findwing.map((floor) => floor._id)
+        const slot = await Slots.findByIdAndUpdate({
+            _id: findwing},
+            {$push: { slots: {$each: req.body} } },
+            {
+                new: true,
+                upsert: true
+            }
+        )
+        res.status(200).json({ success: true, data: slot })
+   
+});
+
+exports.deleteSlotById = asyncHandler(async (req, res, next) => {
+  
+        const slot = await Slots.updateOne(
+            { _id: req.params.floorId},
+            {$pull :{slots:{_id: req.params.slotId}}}
+        )
+        res.status(200).json({ success: true, data: slot })
+});
