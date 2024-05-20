@@ -138,7 +138,7 @@ exports.updateSlots = asyncHandler(async (req, res, next) => {
         }).select({
             _id: 1
         })
-       if (!findwing) {
+       if (findwing.length === 0) {
             return next(new ErrResponse(`Id does not exist for ${floor} and ${wing}`,400 ))
         }
         findwing = findwing.map((floor) => floor._id)
