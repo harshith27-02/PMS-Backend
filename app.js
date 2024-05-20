@@ -1,14 +1,18 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const linkDatabase = require("./settings/db");
-const slots = require("./routes/slots");
+const express = require('express');
+const dotenv = require('dotenv');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const linkDatabase = require('./settings/db');
+const errorHandler = require('./middleware/errorHandler')
+const slots = require('./routes/slots');
+const roles = require('./routes/roles');
+const permissions = require('./routes/permissions')
+const auth = require('./routes/auth');
 const app = express();
 
 dotenv.config();
 
-const port = 5000 || process.env.PORT;
+const port = 3000 || process.env.PORT;
 app.use(express.json());
 app.use(cors())
 app.use((req, res, next) => {
@@ -18,6 +22,10 @@ app.use((req, res, next) => {
 
 
 app.use('/PMS/v1/slots', slots)
+app.use('/PMS/v1/roles', roles)
+app.use('/PMS/v1/permissions', permissions)
+app.use('/PMS/v1/auth', auth)
+app.use(errorHandler)
 app.get('/', (req, res) => {
     res.send('Default Route')
 })
