@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const slotNameSchema = mongoose.Schema({
     slotName: {
@@ -7,7 +7,7 @@ const slotNameSchema = mongoose.Schema({
     },
     vehicleType: {
         type: String,
-        required: [true, "veh is type is required"]
+        required: [true, "Vehicle type is required"]
     },
     isAvailable: {
         type: Boolean,
@@ -16,33 +16,25 @@ const slotNameSchema = mongoose.Schema({
     capacity: {
         type: Number,
     },
-
-
-})
-
-
+});
 
 const slotSchema = new mongoose.Schema({
     floorName: {
         type: String,
-        required: [true, "floor name required"]
-
+        required: [true, "Floor name required"]
     },
     wingName: {
         type: String,
         required: [true, "Wing name is required"]
-
     },
     slots: [slotNameSchema],
-
     isFullyOccupied: {
         type: Boolean,
         default: false
     },
-
     isActive: {
         type: Boolean,
-        default: true
+        default: false
     }
 }, {
     timestamps: true
