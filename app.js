@@ -1,40 +1,45 @@
 const express = require('express');
-const dotenv = require('dotenv');
+const path = require('path');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-const linkDatabase = require('./settings/db');
-const errorHandler = require('./middleware/errorHandler')
-const slots = require('./routes/slots');
-const roles = require('./routes/roles');
-const permissions = require('./routes/permissions')
-const auth = require('./routes/auth');
+const helmet = require('helmet');
+const morgan = require('morgan');
+
+// Import routes
+const vehicleRoutes = require('./routes/vehicles');
+
 const app = express();
 
-dotenv.config();
+// Middleware
+app.use(bodyParser.json());
+app.use(cors({
+  origin: 'http://127.0.0.1:5500'
+}));
+app.use(helmet()); // Helmet for security headers
+app.use(morgan('dev')); // Morgan for request logging
 
-const port = 5000 || process.env.PORT;
-app.use(express.json());
-app.use(cors())
-app.use((req, res, next) => {
-    console.log(Date.now());
-    next()
-})
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vehicleParking', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log(err));
 
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/PMS/v1/slots', slots)
-app.use('/PMS/v1/roles', roles)
-app.use('/PMS/v1/permissions', permissions)
-app.use('/PMS/v1/auth', auth)
-app.use(errorHandler)
-app.get('/', (req, res) => {
-    res.send('Default Route')
-})
+// Serve Parking.html from the pages folder
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages', 'parking.html'));
+});
 
-const startServer = async () => {
-    await linkDatabase();
-    app.listen(port, () => {
-        console.log(`pms backend is running on port ${port}`);
-    })
-}
+// Use routes
+app.use('/api/vehicles', vehicleRoutes);
 
-startServer();
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Internal Server Error');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
