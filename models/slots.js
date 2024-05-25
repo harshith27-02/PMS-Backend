@@ -15,7 +15,12 @@ const slotNameSchema = mongoose.Schema({
     },
     capacity: {
         type: Number,
+        required: [true, "Capacity is required"]
     },
+    category: {
+        type: String,
+        required: [true, "Category is required"]
+    }
 });
 
 const slotSchema = new mongoose.Schema({
@@ -40,4 +45,45 @@ const slotSchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model("Slots", slotSchema);
+module.exports = mongoose.model('Slot', slotSchema);
+
+// const mongoose = require('mongoose');
+
+// const slotSchema = new mongoose.Schema({
+//     floorName: {
+//         type: String,
+//         required: true
+//     },
+//     wingName: {
+//         type: String,
+//         required: true
+//     },
+//     slotName: {
+//         type: String,
+//         required: true
+//     },
+//     isSlotAvailable: {
+//         type: Boolean,
+//         default: true
+//     },
+//     category: {
+//         type: String,
+//         required: true
+//     },
+//     capacity: {
+//         type: Number,
+//         required: true
+//     },
+//     isFullyOccupied: {
+//         type: Boolean,
+//         default: false
+//     },
+//     isActive: {
+//         type: Boolean,
+//         default: true
+//     }
+// }, { timestamps: true });
+
+// const Slot = mongoose.model('Slot', slotSchema);
+
+// module.exports = Slot;

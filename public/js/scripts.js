@@ -12,16 +12,17 @@ $(document).ready(function () {
             vehicleNo: $('#plateNumber').val(),
             category: $('#Category').val(),
             rateCode: $('#rateCode').val(),
-            rate: $('#rate').val(),
-            checkinTime: $('#checkinTime').val(),
-            checkoutTime: $('#checkoutTime').val(),
-            totalHours: $('#totalHours').val(),
-            totalAmount: $('#totalAmount').val(),
+            rate: parseFloat($('#rate').val()), // Convert to number
+            checkIn: $('#checkinTime').val(),
+            checkOut: $('#checkoutTime').val(),
+            totalHours: parseFloat($('#totalHours').val()), // Convert to number
+            totalAmount: parseFloat($('#totalAmount').val()), // Convert to number
             paidStatus: $('#paidStatus').val(),
             paymentMode: $('#paymentMode').val()
         };
+        console.log('Sending data:', newParking);
 
-        $.ajax({
+        $.ajax({        
             url: '/api/parking',
             type: 'POST',
             data: JSON.stringify(newParking),
@@ -35,6 +36,7 @@ $(document).ready(function () {
                 console.error('Error:', error);
             }
         });
+        console.log('Sending data:', newParking);
     });
 
     // Load parking entries

@@ -10,12 +10,18 @@ exports.getSlots = asyncHandler(async (req, res, next) => {
 });
 
 exports.createSlot = asyncHandler(async (req, res, next) => {
+    try {
         const slot = await Slots.create(req.body);
         res.status(201).json({
             success: true,
             data: slot
         });
+    } catch (error) {
+        console.error('Error creating slot:', error);  // Log the error
+        return next(new ErrResponse('Error creating slot', 500));
+    }
 });
+
 
 exports.getSingleSlot = asyncHandler(async (req, res, next) => {
     
@@ -52,6 +58,20 @@ exports.deleteSlot = asyncHandler(async (req, res, next) => {
         res.status(200).json({ success: true, data: slot })
 
 });
+// function deleteSlot(slotId) {
+//     // Implement the logic to delete the slot here
+//     console.log('Deleting slot with ID:', slotId);
+//     // Example: Send a DELETE request to the backend API
+//     axios.delete(`http://localhost:3000/PMS/v1/slots/${slotId}`)
+//         .then(response => {
+//             console.log('Slot deleted successfully:', response.data);
+//             // Fetch updated slot data after deletion
+//             fetchParkingSlots();
+//         })
+//         .catch(error => {
+//             console.error('Error deleting parking slot:', error);
+//         });
+//   }
 
 exports.getFloor = asyncHandler(async (req, res, next) => {
   

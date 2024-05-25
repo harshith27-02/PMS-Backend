@@ -1,69 +1,41 @@
 const mongoose = require("mongoose");
+
 const parkingSchema = new mongoose.Schema({
     vehicleNo: {
         type: String,
         required: [true, "number required"]
     },
-    checkIn: {
-        type: String,
-        required: [true, "check in time is required"]
-    },
-
-    checkOut: {
-        type: String,
-        required: [true, "check out time is required"]
-    },
     category: {
         type: String
-
     },
     rateCode: {
         type: String
     },
-
     rate: {
         type: Number
     },
-
-    slot: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "slots"
-
+    checkIn: {
+        type: Date, // Change to Date
+        required: [true, "check in time is required"]
     },
-
+    checkOut: {
+        type: Date, // Change to Date
+        required: [true, "check out time is required"]
+    },
     totalHours: {
         type: Number
-
     },
     totalAmount: {
         type: Number
     },
-    paymentMode: {
-        type: Array,
-        enum: ["cash", "credit/debit", "upi", "neft/imps"]
-    },
-
     paidStatus: {
-        type: Array,
-        enum: ["pending", "in progress", "completed"]
+        type: String,
+        enum: ["Paid", "Unpaid"]
     },
-
-    role: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "Roles"
-
+    paymentMode: {
+        type: String,
+        enum: ["Cash", "UPI", "Netbanking"]
     },
-    isPaid: {
-        type: Boolean,
-        default: false
-    },
-    submittedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "UserProfile"
-    }
 }, {
     timestamps: true
 });

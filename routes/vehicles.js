@@ -3,10 +3,13 @@ const router = express.Router();
 //const Vehicle = require('../models/vehicle');
 const ParkingEntry = require('../models/parkingEntry');
 
-router.post('/parkingEntries', async (req, res) => {
+router.post('/parking', async (req, res) => {
+  
   const { plateNumber, category, rateCode, rate ,checkinTime, checkoutTime, totalHours, totalAmount, paidStatus, paymentMode } = req.body;
 
+
   try {
+    console.log('Received data:', req.body);
     const newEntry = new ParkingEntry({
       plateNumber,
       category,
@@ -27,7 +30,7 @@ router.post('/parkingEntries', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-router.get('/parkingEntries', async (req, res) => {
+router.get('/parking', async (req, res) => {
   try {
     const entries = await ParkingEntry.find();
     res.json(entries);
