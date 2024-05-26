@@ -35,7 +35,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const parkingRoutes = require('./routes/parkingRoutes');
-const parkingslots= require('./routes/slots');
+const userRoutes = require('./routes/user'); // Assuming user routes are in this file
+
+const parkingslots = require('./routes/slots');
 const app = express();
 const cors = require('cors');
 
@@ -54,7 +56,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 // Routes
 app.use('/api/parking', parkingRoutes);
-app.use('/PMS/v1/slots', parkingslots); 
+app.use('/api/users', userRoutes);
+app.use('/PMS/v1/slots', parkingslots);
 
 // Default Route
 app.get('/', (req, res) => {
