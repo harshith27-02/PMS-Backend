@@ -42,12 +42,13 @@ const app = express();
 const cors = require('cors');
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/parkingDB', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://s223743838:password-123@cluster0.gpmpazp.mongodb.net/PMS?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname)));

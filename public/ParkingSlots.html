@@ -22,7 +22,7 @@
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
                 class="fas fa-bars"></i></button>
         <!-- Navbar Search-->
-        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+        <!-- <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0"> -->
             
         </form>
         <!-- Navbar-->
@@ -82,7 +82,7 @@
                                 data-target="#slotModal">Add New</button>
 
                         </div>
-                        <!-- modal for Rates -->
+                        <!-- modal for Slots -->
                         <div class="modal fade" id="slotModal" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
@@ -110,10 +110,11 @@
                                                         <span class="spnRequired">*</span><label
                                                             for="chkFloor">Floors</label>
                                                         <select class="form-control" id="chkFloor">
-                                                            <option value="select One option">Select One option</option>
-                                                            <option value="1">1</option>
-                                                                <option value="2">2</option>
-                                                                <option value="3">3</option>
+                                                            <option value="<-- select -->">
+                                                                <-- select -->
+                                                            </option>
+
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -122,10 +123,11 @@
                                                         <span class="spnRequired">*</span><label
                                                             for="chkWing">Wings</label>
                                                         <select class="form-control" id="chkWing">
-                                                            <option value="select One option">Select One option</option>
-                                                            <option value="1">1</option>
-                                                            <option value="2">2</option>
-                                                            <option value="3">3</option>
+                                                            <option value="<-- select -->">
+                                                                <-- select -->
+                                                            </option>
+
+
                                                         </select>
                                                     </div>
                                                 </div>
@@ -172,9 +174,9 @@
                                                         <div class="form-group">
                                                             <span style="color:red">*</span><label for="chkCategory">Category</label>
                                                             <select class="form-control" id="chkCategory">
-                                                                <option value="1">1</option>
-                                                                <option value="2">2</option>
-                                                                <option value="3">3</option>
+                                                                <option value="<-- select -->">
+                                                                    <-- select -->
+                                                                </option>
                                                                 <option value="Light Motor Four wheeler">Light Motor
                                                                     Four wheeler</option>
                                                                 <option value="Two Wheeler">Two Wheeler</option>
@@ -222,6 +224,9 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+
+
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-check">
@@ -250,6 +255,118 @@
                             </div>
                         </div>
                     </div>
+                    <!-- modal for Edit Slots-->
+                    <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Edit Slot</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <!-- <div class="row">
+                                                <div class="col-md-8">
+                                                    <div class="form-group">
+                                                        <input id="showDvOldFW" type="checkbox"> Click here to add slots
+                                                        only
+                                                    </div>
+
+                                                </div>
+                                            </div> -->
+                                            <div id="dvNewFW" class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="txtEditFloorName">Floor Name</label>
+                                                        <input type="text" class="form-control" id="txtEditFloorName" placeholder="Enter Floor Name">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="txtEditWingName">Wing Name</label>
+                                                        <input type="text" class="form-control" id="txtEditWingName" placeholder="Enter Floor Name">
+                                                    </div>
+                                                </div>
+                    
+                                            </div>
+                                    
+                                          
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <span style="color:red">*</span><label for="txtEditSlot">Slot Name</label>
+                                                            <input type="text" class="form-control" id="txtEditSlot">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 my-4">
+                                                        <div class="form-check">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                id="chkEditSlot">
+                                                            <label class="form-check-label"
+                                                                for="chkEditSlot">IsSlotAvailable</label>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                           <label for="chkEditCategory">Category</label>
+                                                            <select class="form-control" id="chkEditCategory">
+                                                                <option value="<-- select -->">
+                                                                    <-- select -->
+                                                                </option>
+                                                                <option value="Light Motor Four wheeler">Light Motor
+                                                                    Four wheeler</option>
+                                                                <option value="Two Wheeler">Two Wheeler</option>
+                                                                <option value="Three Wheeler">Three Wheeler</option>
+                                                                <option value="Heavy Vehicle Four Wheeler">Heavy Vehicle
+                                                                    Four Wheeler</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <span style="color:red">*</span> <label for="txtEditCapacity">Capacity</label>
+                                                            <input type="text" class="form-control" id="txtEditCapacity">
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </section>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" name="chkAvailable"
+                                                            class="form-check-input" id="chkEditOccupied">
+                                                        <label class="form-check-label"
+                                                            for="chkEditOccupied">IsFullyOccupied</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" name="checkActive"
+                                                            class="form-check-input" id="chkEditActive">
+                                                        <label class="form-check-label" for="chkEditActive">IsActive</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                            id="btnClose">Close</button>
+                                        <button type="button" class="btn btn-primary" id="btnUpdate">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     <!-- <div class="row">
                             <div class="col-xl-6">
                                 <div class="card mb-4">
@@ -287,7 +404,7 @@
                                         <th scope="col">Capacity</th>
                                         <th scope="col">IsFullyOccupied</th>
                                         <th scope="col"> IsActive</th>
-                                        <!-- <th scope="col">Edit</th> -->
+                                        <th scope="col">Edit</th> 
                                         <th scope="col">Delete</th>
                                     </tr>
                                 </thead>

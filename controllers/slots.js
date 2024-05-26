@@ -135,13 +135,16 @@ exports.getslotsById = asyncHandler(async (req, res, next) => {
 
 exports.updateSlotById = asyncHandler(async (req, res, next) => {
    
-        let {slotName, capacity} = req.body;
+    let { capacity, slotName,vehicleType,isAvailable} = req.body;
         const slot = await Slots.updateOne({
             'slots._id': req.params.id
         }, {
             $set: {
                 "slots.$.capacity": capacity,
-                "slots.$.slotName": slotName
+                "slots.$.slotName": slotName,
+                'slots.$.vehicleType': vehicleType,
+                'slots.$.isAvailable': isAvailable
+            
             }
         })
         res.status(200).json({ success: true, data: slot })
