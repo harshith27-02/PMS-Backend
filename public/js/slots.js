@@ -1,192 +1,401 @@
-// // slots.js - Implement frontend logic
+let floorName = ''
+let wingName = ''
+let slotName = ''
+let isSlotAvailable = false
+let category = ''
+let capacity = ''
+let isFullyOccupied = false
+let isActive = false
+let showDvOldFW = false
+let ddlFloor = ''
+let ddlWing = ''
+let backendURL = 'http://localhost:3000/PMS/v1/slots'
+let selectedFloor = ''
+let selectedWing = ''
+let newSlotHTML = ''
+let newSlotObj = {}
+let newSlots = []
+var allData = []
+var jsonData ={}
+let sigleSlot =[]
+$(document).ready(function () {
+  floorName = $('#txtFloorName')
+  wingName = $('#txtWingName')
+  slotName = $('#txtSlot')
+  isSlotAvailable = $('#chkSlot')
+  category = $('#chkCategory')
+  capacity = $('#txtCapacity')
+  isFullyOccupied = $('#chkOccupied')
+  isActive = $('#chkActive')
+  showDvOldFW = $('#showDvOldFW')
+  ddlFloor = $('#chkFloor')
+  ddlWing = $('#chkWing')
 
-// // Function to fetch parking slots data from backend API and populate the table
-// function fetchParkingSlots() {
-//   axios.get('http://localhost:3000/PMS/v1/slots')
-//       .then(response => {
-//           const slots = response.data;
-//           console.log('Response data:', response.data);
-//           // Populate the table with slot data
-//           const tableBody = document.getElementById('tAllData');
-//           tableBody.innerHTML = '';
-//           slots.forEach(slot => {
-//               slot.slots.forEach(innerSlot => {
-//                   tableBody.innerHTML += `
-//                       <tr>
-//                           <td>${slot.floorName}</td>
-//                           <td>${slot.wingName}</td>
-//                           <td>${innerSlot.slotName}</td>
-//                           <td>${innerSlot.isAvailable ? 'Yes' : 'No'}</td>
-//                           <td>${innerSlot.vehicleType}</td>
-//                           <td>${innerSlot.capacity}</td>
-//                           <td>${slot.isFullyOccupied ? 'Yes' : 'No'}</td>
-//                           <td>${slot.isActive ? 'Yes' : 'No'}</td>
-//                           <td><button class="btn btn-primary btn-sm" onclick="editSlot('${innerSlot._id}')">Edit</button></td>
-//                           <td><button class="btn btn-danger btn-sm" onclick="deleteSlot('${innerSlot._id}')">Delete</button></td>
-//                       </tr>
-//                   `;
-//               });
-//           });
-//       })
-//       .catch(error => {
-//           console.error('Error fetching parking slots:', error);
-//       });
-// }
+  $('#dvOldFW').hide()
+  ddlWing.attr('disabled', 'disabled')
+  isSlotAvailable.attr('checked', true)
+  isActive.attr('checked', true)
 
-// // Function to add a new parking slot
-// function addParkingSlot(slotData) {
-//   axios.post('http://localhost:3000/PMS/v1/slots', slotData)
-//       .then(response => {
-//           console.log('Slot added successfully:', response.data);
-//           // Fetch updated slot data after addition
-//           fetchParkingSlots();
-//           // Close the modal
-//           $('#slotModal').modal('hide');
-//       })
-//       .catch(error => {
-//           console.error('Error adding parking slot:', error);
-//       });
-// }
+  getAPI(backendURL).then(floors => {
+    allData = floors;
+    var totalCapacity =0
+    var allDataHTML = ''
+    var allDataLength = allData.data.length
+    for (var i=0; i< allDataLength; i++){
+      for (var j=0; j< allData.data[i].slots.length; j++) {
+        allDataHTML +=
+        '<tr>' +
+        '<td>' + allData.data[i].floorName + '</td>' +
+        '<td>' + allData.data[i].wingName + '</td>' +
+        '<td>' + allData.data[i].slots[j].slotName + '</td>' +
+        '<td>' + allData.data[i].slots[j].isAvailable+ '</td>' +
+        '<td>' + allData.data[i].slots[j].vehicleType + '</td>' +
+        '<td>' + allData.data[i].slots[j].capacity + '</td>' +
+        '<td>' + allData.data[i].isFullyOccupied + '</td>' +
+        '<td>' + allData.data[i].isActive + '</td>' +
+        '<td data-toggle="modal" data-target="#editModal" onclick=\'editSlot("' + allData.data[i].slots[j]._id
+        + '")\'>'+
+        "<i class='fa fa-pencil'></i>"+'</td>' +
+        '<td onclick=\'removeFromSlots("' + allData.data[i]._id +'","' +
+        allData.data[i].slots[j]._id + '")\'>' +
+         "<i class = 'fa fa-trash'></i>" + '</td>' +
+        '</tr>'
+        totalCapacity += allData.data[i].slots[j].capacity  
+        }
+        }
+      $('#tAllData').html(allDataHTML)  
 
-// // Function to handle form submission for adding a new parking slot
-// document.getElementById('btnSave').addEventListener('click', function(event) {
-//   event.preventDefault();
-//   // Extract slot data from the form
-//   const floorName = document.getElementById('txtFloorName').value;
-//   const wingName = document.getElementById('txtWingName').value;
-//   const slotName = document.getElementById('txtSlot').value;
-//   const vehicleType = document.getElementById('chkCategory').value;
-//   const capacity = document.getElementById('txtCapacity').value;
-//   const isAvailable = document.getElementById('chkSlot').checked;
-//   const isFullyOccupied = document.getElementById('chkOccupied').checked;
-//   const isActive = document.getElementById('chkActive').checked;
-//   // Construct slot object
-//   const slotData = {
-//       floorName,
-//       wingName,
-//       slots: [{ slotName, vehicleType, isAvailable, capacity }],
-//       isFullyOccupied,
-//       isActive
-//   };
-//   // Add the new parking slot
-//   addParkingSlot(slotData);
-// });
+    console.log(allData)
+  })
+  .catch(error => {
+    console.log(error)
+  })
 
-// // Function to initialize the page
-// function initializePage() {
-//   // Fetch parking slots data when the page loads
-//   fetchParkingSlots();
-// }
+  showDvOldFW.click(function () {
+    if (showDvOldFW.is(':checked') === true) {
+      $('#dvOldFW').show()
+      $('#dvNewFW').hide()
+      newSlots = []
+      $("#tAvailableSlots").html('')
+    } else {
+      $('#dvOldFW').hide()
+      $('#dvNewFW').show()
+      newSlots = []
+      $("#tAvailableSlots").html('')
+    }
+  })
 
-// // Call initializePage function when the page DOM is ready
-// document.addEventListener('DOMContentLoaded', initializePage);
-// Function to fetch parking slots data from backend API and populate the table
-function fetchParkingSlots() {
-  axios.get('http://localhost:3000/PMS/v1/slots')
-      .then(response => {
-          // Log the response data to the console
-          console.log('Response data:', response.data);
+  getAPI(backendURL.concat(`/${true}/floors`))
+    .then((floors) => {
+      console.log(floors)
+      var distinctFloors = floors
+      if (distinctFloors.success) {
+        $.each(distinctFloors.data, function (index, floor) {
+          ddlFloor.append(
+            '<option value="' + floor + '">' + floor + '</option>',
+          )
+        })
+      } else {
+        console.log('Something Went Wrong')
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 
-          // Extract the actual slots array from the response data
-          const slots = response.data.data;
-          
-          // Log the slots data to verify it's correctly extracted
-          console.log('Slots data:', slots);
+  ddlFloor.change(function () {
+    $('#chkWing option').remove()
+    ddlWing.append('<option value="<-- select -->"><-- select --></option>')
+    selectedFloor = this.value
+    if (selectedFloor !== '< --select -->') {
+      ddlWing.attr('disabled', false)
+      getAPI(backendURL.concat(`/${selectedFloor}/wings`))
+        .then((wings) => {
+          var distinctWings = wings
+          if (distinctWings.success) {
+            $.each(distinctWings.data, function (index, wing) {
+              ddlWing.append(
+                '<option value="' + wing + '">' + wing + '</option>',
+              )
+            })
+          } else {
+            console.log('Something went wrong')
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+  })
 
-          // Populate the table with slot data
-          // Example: Update the HTML content of the table body
-          const tableBody = document.getElementById('tAllData');
-          tableBody.innerHTML = '';
-          slots.forEach(slot => {
-              slot.slots.forEach(subSlot => {
-                  tableBody.innerHTML += `
-                      <tr>
-                          <td>${slot.floorName}</td>
-                          <td>${slot.wingName}</td>
-                          <td>${subSlot.slotName}</td>
-                          <td>${subSlot.isAvailable ? 'Yes' : 'No'}</td>
-                          <td>${subSlot.vehicleType}</td>
-                          <td>${subSlot.capacity}</td>
-                          <td>${slot.isFullyOccupied ? 'Yes' : 'No'}</td>
-                          <td>${slot.isActive ? 'Yes' : 'No'}</td>
-                          <td><button class="btn btn-danger btn-sm" onclick="deleteSlot('${subSlot._id}')">Delete</button></td>
-                      </tr>
-                  `;
-              });
-          });
+  ddlWing.change(function () {
+    var slotsHTML = ''
+    var slotsLength = 0
+    var oldSlots = []
+    selectedWing = this.value
+    if (selectedWing !== '<-- select -->') {
+      getAPI(backendURL.concat(`/${selectedFloor}/${selectedWing}`)).then(
+        (allSlots) => {
+          oldSlots = allSlots.data[0].slots
+          slotsLength = oldSlots.length
+          if (slotsLength !== 0) {
+            for (var i = 0; i < slotsLength; i++) {
+              slotsHTML +=
+                '<tr>' +
+                '<td>' +
+                oldSlots[i].slotName +
+                '</td>' +
+                '<td>' +
+                oldSlots[i].isAvailable +
+                '</td>' +
+                '<td>' +
+                oldSlots[i].vehicleType +
+                '</td>' +
+                '<td>' +
+                oldSlots[i].capacity +
+                '</td>' +
+                '<td onclick="removeFromSlots(\'' +
+                oldSlots[i]._id +
+                '\')">' +
+                '<i class="fa fa-trash"></i>' +
+                '</td>' +
+                '</tr>'
+            }
+            $('#tAvailableSlots').html(slotsHTML)
+          } else {
+            slotsHTML = ''
+            $('#tAvailableSlots').html()
+            slotsHTML = 'No Slots are available for the selected floor and wing'
+            $('#tAvailableSlots').html(slotsHTML)
+          }
+        },
+      )
+    }
+  })
+
+  $('#btnAddSlot').click(function () {
+    if (addValidation()) {
+      slotName = $('#txtSlot').val()
+      category = $('#chkCategory').val()
+      capacity = $('#txtCapacity').val()
+      isSlotAvailable = $('#chkSlot').is(':checked') === false ? false : true
+      newSlotObj = {
+        slotName: slotName,
+        isAvailable: isSlotAvailable,
+        vehicleType: category,
+        capacity: capacity,
+      }
+      newSlots.push(newSlotObj)
+      for (var i = 0; i < newSlots.length; i++) {
+        newSlotHTML =
+          '<tr>' +
+          '<td>' +
+          newSlots[i].slotName +
+          '</td>' +
+          '<td>' +
+          newSlots[i].isAvailable +
+          '</td>' +
+          '<td>' +
+          newSlots[i].vehicleType +
+          '</td>' +
+          '<td>' +
+          newSlots[i].capacity +
+          '</td>' +
+          '<td onclick="removeRow(\'' +
+          i +
+          '\')">' +
+          '<i class="fa fa-trash"></i>' +
+          '</td>' +
+          '</tr>'
+      }
+      $('#tAvailableSlots').append(newSlotHTML)
+      $('#txtSlot').val('')
+      $('#chkCategory').val('<-- select -->')
+      $('#txtCapacity').val('')
+    }
+  })
+
+  $('#btnSave').click(function () {
+    floorName = $('#txtFloorName')
+    wingName = $('#txtWingName')
+    slotName = $('#txtSlot')
+    isSlotAvailable = $('#chkSlot')
+    category = $('#chkCategory')
+    capacity = $('#txtCapacity')
+    isFullyOccupied = $('#chkOccupied')
+    isActive = $('#chkActive')
+    showDvOldFW = $('#showDvOldFW')
+    ddlFloor = $('#chkFloor')
+    ddlWing = $('#chkWing')
+
+    if (showDvOldFW.is(':checked') === false) {
+      jsonData= {};
+    //   newSlots = [];
+      jsonData = {
+        floorName: floorName.val(),
+        wingName: wingName.val(),
+        slots: newSlots,
+        isFullyOccupied: isFullyOccupied.is(':checked') === false ?  false : true,
+        isActive: isActive.is(':checked') === false ?  false : true,
+      }
+      insertAPI(backendURL, jsonData).then(data => {
+        $("#btnSave").hide()
+      }).catch((error) => {
+        console.log(error)
       })
-      .catch(error => {
-          console.error('Error fetching parking slots:', error);
-      });
+    } else {
+      floorName = ddlFloor.val() !== '<-- select -->' ? ddlFloor.val() : ''
+      wingName = ddlWing.val() !== '<-- select -->' ? ddlWing.val() : ''
+      updateAPI(backendURL.concat(`/${floorName}/${wingName}`), newSlots)
+        .then((response) => {
+          $('#btnSave').hide()
+        })
+        .catch((error) => {
+          console.log('Something went wrong')
+        })
+    }
+  })
+})
+$("#btnUpdate").click(function () {
+ jsonData = {
+    capacity: $('#txtEditCapacity').val().trim().length === 0 ?  0 : $('#txtEditCapacity').val(),
+    slotName: $('#txtEditSlot').val(),
+    vehicleType: $('#chkEditCategory').val(),
+    isAvailable: $('#chkEditSlot').is(':checked') === false ? false : true
+ }
+ updateAPI(backendURL.concat(`/floor/slot/${sigleSlot[0].slots[0]._id}`), jsonData).then(uSlot => {
+  if(uSlot.data.acknowledged && uSlot.data.modifiedCount === 1 &&
+    uSlot.data.matchedCount === 1){
+     window.location.href = location.href
+    }
+    else {
+      console.log("Something Went Wrong")
+    }
+ }).catch(error =>{
+  console.log(error)
+ })
+})
+
+
+var getAPI = async (fullURL) => {
+  var response = await axios.get(fullURL)
+  return response.data
+}
+var insertAPI = async(backendURL, jsonData) => {
+    var response = await axios.post(backendURL, jsonData)
+    return response.data
+}
+var updateAPI = async (backendURL, jsonData) => {
+  var response = await axios.put(backendURL, jsonData)
+  return response.data
+}
+var deleteAPI = async (backendURL) => {
+  var response = await axios.delete(backendURL)
+  return response.data
+}
+function removeFromSlots(floorId, slotId) {
+  let result = confirm("Are you sure the delete the slot");
+  if (result){
+    deleteAPI(backendURL.concat(`/slot/${floorId}/${slotId}`)).then((record) => {
+      if (record.success){
+        window.location.href = location.href
+      }
+    }).catch((error) => {
+      console.log(error)
+    })
+  } 
+}
+function removeRow(index) {
+    newSlotHTML = ''
+    newSlots.splice(index,1);
+    for (var i=0; i< newSlots.length; i++){
+        newSlotHTML +=
+         '<tr>' +
+         '<td>'+
+         newSlots[i].slotName+
+         '</td>'+
+         '<td>'+
+         newSlots[i].isAvailable+
+         '</td>'+
+         '<td>'+
+         newSlots[i].vehicleType +
+         '</td>'+
+         '<td>'+
+         newSlots[i].capacity +
+         '</td>'+
+         '<td onclick=\'removeRow("' +
+         i +
+         "\")' data-index='" +
+         i +
+         "'>" +
+         '<span>'+
+         "<i class='fa fa-trash'></i></span></td>"
+    }
+    $('#tAvailableSlots').html(newSlotHTML)
 }
 
-// Function to add a new parking slot
-function addParkingSlot(slotData) {
-  axios.post('http://localhost:3000/PMS/v1/slots', slotData)
-      .then(response => {
-          console.log('Slot added successfully:', response.data);
-          // Fetch updated slot data after addition
-          fetchParkingSlots();
-          // Close the modal
-          $('#slotModal').modal('hide');
-      })
-      .catch(error => {
-          console.error('Error adding parking slot:', error);
-      });
+function editSlot(id) {
+  var fullURL = backendURL.concat(`/floor/slot/${id}`);
+  getAPI(fullURL).then(slot => {
+    sigleSlot.push(slot.data[0]);
+    $("#txtEditFloorName").val(slot.data[0].floorName)
+    $("#txtEditWingName").val(slot.data[0].wingName)
+    $("#txtEditSlot").val(slot.data[0].slots[0].slotName)
+    slot.data[0].slots[0].isAvailable ? 
+    $("#chkEditSlot").attr("checked", true):
+    $("#chkEditSlot").attr("checked", false)
+    $("#chkEditCategory").val(slot.data[0].slots[0].vehicleType)
+    $("#txtEditCapacity").val(slot.data[0].slots[0].capacity)
+    slot.data[0].slots[0].isFullyOccupied ?
+     $("#chkEditOccupied").attr("checked", true):
+     $("#chkEditOccupied").attr("checked", false)
+     slot.data[0].isActive ?
+     $("#chkEditActive").attr("checked", true):
+     $("#chkEditActive").attr("checked", false)
+  }).catch(error => {
+    console.log(error)
+  })
 }
 
-// Function to handle form submission for adding a new parking slot
-// Function to handle form submission for adding a new parking slot
-document.getElementById('btnSave').addEventListener('click', function(event) {
-  event.preventDefault();
-  // Extract slot data from the form
-  const floorName = document.getElementById('txtFloorName').value;
-  const wingName = document.getElementById('txtWingName').value;
-  const slotName = document.getElementById('txtSlot').value;
-  const vehicleType = document.getElementById('chkCategory').value;
-  const capacity = document.getElementById('txtCapacity').value;
-  const isAvailable = document.getElementById('chkSlot').checked;
-  const isFullyOccupied = document.getElementById('chkOccupied').checked;
-  const isActive = document.getElementById('chkActive').checked;
+function addValidation() {
+  var isValidated = false
+  slotName = $('#txtSlot')
+  category = $('#chkCategory')
+  capacity = $('#txtCapacity')
 
-  // Validate form data
-  if (!floorName || !wingName || !slotName || !vehicleType || !capacity) {
-    alert('Please fill out all required fields.');
-    return;
+  if (
+    slotName.val().trim().length === 0 ||
+    category.val() === '<-- select -->' ||
+    capacity.val().trim().length === 0
+  ) {
+    slotName.css('border', '1px solid red')
+    category.css('border', '1px solid red')
+    capacity.css('border', '1px solid red')
+  } else {
+    slotName.css('border', '')
+    category.css('border', '')
+    capacity.css('border', '')
   }
-
-  // Construct slot object
-  const slotData = {
-    floorName,
-    wingName,
-    slots: [{ slotName, vehicleType, isAvailable, capacity, category: vehicleType }],
-    isFullyOccupied,
-    isActive
-  };
-
-  // Add the new parking slot
-  addParkingSlot(slotData);
-});
-function deleteSlot(slotId) {
-  // Implement the logic to delete the slot here
-  console.log('Deleting slot with ID:', slotId);
-  // Example: Send a DELETE request to the backend API
-  axios.delete(`http://localhost:3000/PMS/v1/slots/${slotId}`)
-      .then(response => {
-          console.log('Slot deleted successfully:', response.data);
-          // Fetch updated slot data after deletion
-          fetchParkingSlots();
-      })
-      .catch(error => {
-          console.error('Error deleting parking slot:', error);
-      });
+  if (slotName.val().trim().length === 0) {
+    slotName.css('border', '1px solid red')
+    isValidated = false
+  } else {
+    slotName.css('border', '')
+    isValidated = true
+  }
+  if (category.val() === '<-- select -->') {
+    category.css('border', '1px solid red')
+    isValidated = false
+  } else {
+    category.css('border', '')
+    isValidated = true
+  }
+  if (capacity.val().trim().length === 0) {
+    capacity.css('border', '1px solid red')
+    isValidated = false
+  } else {
+    capacity.css('border', '')
+    isValidated = true
+  }
+  return isValidated
 }
-
-// Function to initialize the page
-function initializePage() {
-  // Fetch parking slots data when the page loads
-  fetchParkingSlots();
-}
-
-// Call initializePage function when the page DOM is ready
-document.addEventListener('DOMContentLoaded', initializePage);
