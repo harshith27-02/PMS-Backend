@@ -34,12 +34,13 @@ The Parking Management Application is designed to help manage parking slots effi
    ```bash
    git clone https://github.com/yourusername/parking-management-app.git
    cd parking-management-app
-Install dependencies:
 
-bash
-Copy code
+## Install dependencies:
+
+bash Copy code
 npm install
-Set up MongoDB:
+
+## Set up MongoDB:
 
 Ensure MongoDB is running on your machine.
 Create a database named parkingDB.
@@ -52,14 +53,14 @@ Start the server:
 node server.js
 
 
-Running the Application
+## Running the Application
 Start the server:
 node server.js
 
 Open your browser and navigate to:
 
 http://localhost:3000
-Access the following pages:
+## Access the following pages:
 
 Login: /login.html
 Register: /register.html
@@ -69,7 +70,7 @@ Example Users
 Admin User:
 Email: admin@example.com
 Password: password123
-API Endpoints
+## API Endpoints
 User Authentication
 Register:
 
@@ -146,7 +147,7 @@ Copy code
 Get all parking entries:
 
 GET /api/parkings
-Technologies Used
+## Technologies Used
 Backend:
 
 Node.js
@@ -159,7 +160,8 @@ HTML
 CSS
 JavaScript
 Bootstrap
-Contributing
+
+## Contributing
 Contributions are welcome! Please fork the repository and create a pull request with your changes.
 
 License
